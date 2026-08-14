@@ -1,0 +1,3 @@
+- insert:
+    - id: greet-tool
+      name: dsh-plugin-greet

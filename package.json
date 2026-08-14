@@ -1,0 +1,34 @@
+{
+  "name": "dsh-plugin-greet",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A minimal greet tool plugin for DeepSeek Harness.",
+  "license": "MIT",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "agent-tool",
+    "cordis"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0lidaxiang/dsh-plugin-greet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/0lidaxiang/dsh-plugin-greet/issues"
+  },
+  "homepage": "https://github.com/0lidaxiang/dsh-plugin-greet#readme",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "docs"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
