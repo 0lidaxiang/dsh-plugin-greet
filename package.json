@@ -1,7 +1,6 @@
 {
   "name": "dsh-plugin-greet",
   "version": "0.1.0",
-  "private": true,
   "description": "A minimal greet tool plugin for DeepSeek Harness.",
   "license": "MIT",
   "keywords": [
@@ -19,6 +18,10 @@
     "url": "https://github.com/0lidaxiang/dsh-plugin-greet/issues"
   },
   "homepage": "https://github.com/0lidaxiang/dsh-plugin-greet#readme",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "type": "module",
   "main": "index.js",
   "files": [

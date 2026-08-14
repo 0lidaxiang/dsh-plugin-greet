@@ -17,6 +17,26 @@ An installable community plugin for DeepSeek Harness that registers a minimal `g
 - 额外依赖：无
 - 构建步骤：无，仓库中的 JavaScript 可以直接安装
 
+## 从 npm 安装
+
+先停止正在运行的 DeepSeek Harness，然后把固定版本安装到 `web` Profile：
+
+```sh
+npx @deepseek-ai/dsh plugin --profile web add dsh-plugin-greet@0.1.0
+```
+
+在启动前确认 Bundle 已进入最终配置：
+
+```sh
+npx @deepseek-ai/dsh --profile web --dump-config
+```
+
+然后启动 Web UI：
+
+```sh
+npx @deepseek-ai/dsh web
+```
+
 ## 从 GitHub 安装
 
 先停止正在运行的 DeepSeek Harness，然后把固定版本安装到 `web` Profile：
