@@ -27,7 +27,8 @@
   "files": [
     "index.js",
     "cordis.patch.yml",
-    "docs"
+    "docs",
+    "README.zh-CN.md"
   ],
   "dsh": {
     "bundle": {
