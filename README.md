@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/readme-hero.webp" alt="dsh-plugin-greet — Your first DeepSeek Harness plugin" width="100%">
+</p>
+
 # dsh-plugin-greet
 
 English | [简体中文](docs/README.zh-CN.md)
@@ -219,10 +223,13 @@ Make sure your later patch restates the row with the same `id` (`greet-tool`), t
 
 ```text
 dsh-plugin-greet/
-├── .github/workflows/ci.yml  # Tests and package checks
+├── .github/
+│   ├── assets/social-preview.png # GitHub social preview image
+│   └── workflows/ci.yml          # Tests and package checks
 ├── docs/
 │   ├── README.zh-CN.md       # Chinese documentation
-│   └── greet-tool-result.png # README screenshot
+│   ├── greet-tool-result.png # README screenshot
+│   └── readme-hero.webp      # Lightweight README hero
 ├── tests/greet.test.js       # Node.js unit tests
 ├── cordis.patch.yml          # Inserts the plugin into a profile
 ├── index.js                  # Config and greet tool implementation

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="readme-hero.webp" alt="dsh-plugin-greet——你的第一个 DeepSeek Harness 插件" width="100%">
+</p>
+
 # dsh-plugin-greet
 
 [English](../README.md) | 简体中文
@@ -219,10 +223,13 @@ npm run check
 
 ```text
 dsh-plugin-greet/
-├── .github/workflows/ci.yml  # 自动测试与打包检查
+├── .github/
+│   ├── assets/social-preview.png # GitHub 社交预览图
+│   └── workflows/ci.yml          # 自动测试与打包检查
 ├── docs/
 │   ├── README.zh-CN.md       # 中文文档
-│   └── greet-tool-result.png # README 截图
+│   ├── greet-tool-result.png # README 截图
+│   └── readme-hero.webp      # 轻量 README 横幅
 ├── tests/greet.test.js       # Node.js 单元测试
 ├── cordis.patch.yml          # 把插件插入 Profile
 ├── index.js                  # Config 与 greet 工具实现
