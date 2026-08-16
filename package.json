@@ -1,7 +1,7 @@
 {
   "name": "dsh-plugin-greet",
-  "version": "0.1.2",
-  "description": "A minimal greet tool plugin for DeepSeek Harness.",
+  "version": "0.2.0",
+  "description": "A beginner-friendly configurable greet tool plugin for DeepSeek Harness.",
   "license": "MIT",
   "keywords": [
     "deepseek-harness",
@@ -24,6 +24,10 @@
   },
   "type": "module",
   "main": "index.js",
+  "scripts": {
+    "test": "node --test",
+    "check": "npm test && npm pack --dry-run"
+  },
   "files": [
     "index.js",
     "cordis.patch.yml",
@@ -33,5 +37,8 @@
     "bundle": {
       "patch": "./cordis.patch.yml"
     }
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "^3.18.1"
   }
 }
