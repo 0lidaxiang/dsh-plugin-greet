@@ -1,6 +1,6 @@
 # dsh-plugin-greet
 
-English | [简体中文](README.zh-CN.md)
+English | [简体中文](docs/README.zh-CN.md)
 
 An installable community plugin for DeepSeek Harness that demonstrates the complete lifecycle of a minimal tool plugin: bundle distribution, profile composition, tool registration, and a real tool call.
 

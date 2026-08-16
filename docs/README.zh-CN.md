@@ -1,12 +1,12 @@
 # dsh-plugin-greet
 
-[English](README.md) | 简体中文
+[English](../README.md) | 简体中文
 
 一个可直接安装的 DeepSeek Harness 社区插件，用来演示最小工具插件的完整链路：Bundle 分发、Profile 装配、工具注册与真实调用。
 
 > 本项目是社区示例，不是 DeepSeek AI 官方插件。DeepSeek Harness 目前仍处于 Developer Preview，后续版本可能需要调整兼容性。
 
-![greet 工具调用结果](docs/greet-tool-result.png)
+![greet 工具调用结果](greet-tool-result.png)
 
 ## 功能
 
@@ -119,4 +119,4 @@ DeepSeek Harness 插件运行在宿主进程中。安装第三方插件前请检
 
 ## License
 
-[MIT](LICENSE)
+[MIT](../LICENSE)

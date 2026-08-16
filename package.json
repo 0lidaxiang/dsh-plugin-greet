@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-greet",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A minimal greet tool plugin for DeepSeek Harness.",
   "license": "MIT",
   "keywords": [
@@ -27,8 +27,7 @@
   "files": [
     "index.js",
     "cordis.patch.yml",
-    "docs",
-    "README.zh-CN.md"
+    "docs"
   ],
   "dsh": {
     "bundle": {
