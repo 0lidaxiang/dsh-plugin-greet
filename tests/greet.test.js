@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
+import { Context } from '@deepseek-ai/cordis'
+import ToolRuntime, { ToolArgsError } from '@deepseek-ai/dsh-tools'
+import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
 
-import { Config, DEFAULT_CONFIG, apply } from '../index.js'
+import * as GreetPlugin from '../index.js'
+
+const { Config, DEFAULT_CONFIG, apply } = GreetPlugin
 
 function registerTool(config) {
   let tool
@@ -22,13 +27,15 @@ describe('greet plugin', () => {
     assert.deepEqual(result, { value: DEFAULT_CONFIG })
   })
 
-  it('registers a documented, closed argument schema', () => {
+  it('registers a typed schema through the current defineTool API', () => {
     const tool = registerTool()
     assert.equal(tool.name, 'greet')
     assert.deepEqual(tool.parameters.required, ['name'])
-    assert.equal(tool.parameters.additionalProperties, false)
+    assert.equal(tool.parameters.additionalProperties, undefined)
     assert.deepEqual(tool.parameters.properties.language.enum, ['en', 'zh'])
     assert.deepEqual(tool.parameters.properties.style.enum, ['friendly', 'formal'])
+    assert.deepEqual(tool.output.schema.required, ['message', 'name', 'language', 'style'])
+    assert.equal(tool.output.schema.additionalProperties, false)
   })
 
   it('returns structured friendly English output by default', async () => {
@@ -78,18 +85,63 @@ describe('greet plugin', () => {
   it('rejects invalid arguments with actionable errors', async () => {
     const tool = registerTool()
     const cases = [
-      [null, /arguments must be an object/],
-      [{}, /name must be a string/],
-      [{ name: 42 }, /name must be a string/],
+      [null, /invalid arguments: .* must be an object/],
+      [{}, /missing required property .*name/],
+      [{ name: 42 }, /.*name.* must be a string/],
       [{ name: '   ' }, /name must not be empty/],
       [{ name: 'a'.repeat(81) }, /at most 80 characters/],
-      [{ name: 'Ada', language: 'fr' }, /language must be "en" or "zh"/],
-      [{ name: 'Ada', style: 'loud' }, /style must be "friendly" or "formal"/],
+      [{ name: 'Ada', language: 'fr' }, /.*language.* must be one of/],
+      [{ name: 'Ada', style: 'loud' }, /.*style.* must be one of/],
       [{ name: 'Ada', extra: true }, /unsupported argument "extra"/],
     ]
 
     for (const [args, message] of cases) {
       await assert.rejects(() => tool.execute(args), message)
     }
+  })
+
+  it('uses Harness ToolArgsError for schema violations', async () => {
+    const tool = registerTool()
+    await assert.rejects(() => tool.execute({ name: 42 }), ToolArgsError)
+  })
+
+  it('registers and executes through the real Harness tool runtime', async () => {
+    const ctx = new Context()
+    await ctx.plugin(SystemPrompt)
+    await ctx.plugin(ToolRuntime)
+    await ctx.plugin(GreetPlugin)
+
+    const schema = ctx.tools.schemas().find(tool => tool.name === 'greet')
+    assert.deepEqual(schema.parameters.required, ['name'])
+
+    const signal = new AbortController().signal
+    const result = await ctx.tools.execute({
+      signal,
+      callId: 'greet-test-1',
+      name: 'greet',
+      arguments: { name: 'Ada', language: 'en', style: 'friendly' },
+    })
+    assert.deepEqual(result, {
+      isError: false,
+      content: [{ type: 'text', text: 'Hello, Ada!' }],
+      value: {
+        message: 'Hello, Ada!',
+        name: 'Ada',
+        language: 'en',
+        style: 'friendly',
+      },
+    })
+
+    const invalid = await ctx.tools.execute({
+      signal,
+      callId: 'greet-test-2',
+      name: 'greet',
+      arguments: { name: 42 },
+    })
+    assert.equal(invalid.isError, true)
+    assert.deepEqual(invalid.error.info, {
+      name: 'ToolArgsError',
+      code: 'INVALID_ARGS',
+    })
   })
 })

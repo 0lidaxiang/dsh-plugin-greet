@@ -1,4 +1,5 @@
 import Schema from '@deepseek-ai/schemastery'
+import { defineTool } from '@deepseek-ai/dsh-tools'
 
 export const name = 'greet-tool'
 export const inject = ['tools']
@@ -111,42 +112,37 @@ export function formatGreeting({ name, language, style }, config = DEFAULT_CONFI
 export function apply(ctx, config) {
   const resolvedConfig = resolveConfig(config)
 
-  ctx.tools.register({
+  ctx.tools.register(defineTool({
     name: 'greet',
     description: 'Greet someone by name in English or Chinese, using a friendly or formal style.',
     parameters: {
-      type: 'object',
-      properties: {
-        name: {
-          type: 'string',
-          description: 'The name to greet. Leading and trailing whitespace is removed.',
-        },
-        language: {
-          type: 'string',
-          enum: ['en', 'zh'],
-          default: resolvedConfig.defaultLanguage,
-          description: 'Greeting language. Uses the plugin default when omitted.',
-        },
-        style: {
-          type: 'string',
-          enum: ['friendly', 'formal'],
-          default: resolvedConfig.defaultStyle,
-          description: 'Greeting style. Uses the plugin default when omitted.',
-        },
+      name: {
+        type: 'string',
+        required: true,
+        description: 'The name to greet. Leading and trailing whitespace is removed.',
       },
-      required: ['name'],
-      additionalProperties: false,
+      language: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        default: resolvedConfig.defaultLanguage,
+        description: 'Greeting language. Uses the plugin default when omitted.',
+      },
+      style: {
+        type: 'string',
+        enum: ['friendly', 'formal'],
+        default: resolvedConfig.defaultStyle,
+        description: 'Greeting style. Uses the plugin default when omitted.',
+      },
     },
     output: {
       schema: {
         type: 'object',
         properties: {
-          message: { type: 'string' },
-          name: { type: 'string' },
-          language: { type: 'string', enum: ['en', 'zh'] },
-          style: { type: 'string', enum: ['friendly', 'formal'] },
+          message: { type: 'string', required: true },
+          name: { type: 'string', required: true },
+          language: { type: 'string', enum: ['en', 'zh'], required: true },
+          style: { type: 'string', enum: ['friendly', 'formal'], required: true },
         },
-        required: ['message', 'name', 'language', 'style'],
         additionalProperties: false,
       },
       render: (_args, value) => [{ type: 'text', text: value.message }],
@@ -158,5 +154,5 @@ export function apply(ctx, config) {
         ...resolvedArgs,
       }
     },
-  })
+  }))
 }

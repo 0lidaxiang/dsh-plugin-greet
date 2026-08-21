@@ -6,7 +6,7 @@
 
 English | [简体中文](docs/README.zh-CN.md)
 
-A beginner-friendly, installable DeepSeek Harness plugin that demonstrates bundle distribution, profile composition, plugin configuration, tool schemas, structured output, validation, testing, and a real model-driven tool call.
+A beginner-friendly, installable DeepSeek Harness plugin that demonstrates bundle distribution, profile composition, plugin configuration, the typed `defineTool()` API, structured output, validation, testing, and a real model-driven tool call.
 
 > This is a community example, not an official DeepSeek AI plugin. DeepSeek Harness is currently in Developer Preview, so future releases may require compatibility updates.
 
@@ -30,6 +30,7 @@ The example covers:
 
 - exporting a validated plugin `Config`
 - injecting and using the Harness `tools` service
+- registering a tool with the current `defineTool()` schema DSL
 - required and optional tool arguments
 - English and Chinese greetings
 - friendly and formal styles
@@ -83,10 +84,12 @@ This separation lets other plugins or policies use the structured fields without
 
 ## Install from npm
 
+Version `0.3.x` requires Node.js `^22.19.0` or `>=24.0.0` and targets the DeepSeek Harness `0.1.1` release-candidate line.
+
 Stop any running DeepSeek Harness instance, then install the package into the `web` profile:
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add dsh-plugin-greet@0.2.0
+npx @deepseek-ai/dsh plugin --profile web add dsh-plugin-greet@0.3.0
 ```
 
 This command does more than a regular `npm install`: it installs the package into the selected Harness profile and adds its declared bundle to the profile composition.
@@ -199,7 +202,7 @@ Run the complete local check, including the npm package preview:
 npm run check
 ```
 
-The test suite verifies configuration defaults, registration metadata, all four greeting modes, structured output rendering, whitespace normalization, invalid values, unknown arguments, and length limits. GitHub Actions runs the same checks on Node.js 20 and 22.
+The test suite imports the real Harness tool API and verifies configuration defaults, registration metadata, all four greeting modes, structured output rendering, whitespace normalization, invalid values, unknown arguments, and length limits. GitHub Actions runs the same checks on Node.js 22.19 and 24.
 
 ## Troubleshooting
 
@@ -218,6 +221,18 @@ A regular npm install only adds a dependency to the current Node.js project. Use
 ### My configuration did not take effect
 
 Make sure your later patch restates the row with the same `id` (`greet-tool`), the package `name`, and the complete `config` object.
+
+### A Harness source checkout stopped working after `git pull`
+
+Use a supported Node.js version, refresh dependencies, and remove stale generated output before rebuilding:
+
+```sh
+nvm use 22.22.3
+pnpm install --frozen-lockfile
+pnpm run clean
+pnpm run build
+pnpm dsh --profile web --no-open
+```
 
 ## Project structure
 
@@ -242,9 +257,9 @@ dsh-plugin-greet/
 
 DeepSeek Harness plugins run inside the host process. Review third-party plugin source code before installation, and prefer a pinned release tag or commit SHA.
 
-The plugin has no network, filesystem, shell, or credential access. It depends only on the official `@deepseek-ai/schemastery` package for configuration validation.
+The plugin has no network, filesystem, shell, or credential access. It uses the official `@deepseek-ai/dsh-tools` package for typed tool registration and `@deepseek-ai/schemastery` for configuration validation.
 
-The original `0.1.x` release line was verified with `@deepseek-ai/dsh 0.1.0-rc.6`. Run the included tests and a real profile installation when upgrading Harness versions.
+The `0.3.x` release line is verified with `@deepseek-ai/dsh 0.1.1-rc.1`. The original `0.1.x` line targeted `0.1.0-rc.6`. Run the included tests and a real profile installation when upgrading Harness versions.
 
 ## License
 

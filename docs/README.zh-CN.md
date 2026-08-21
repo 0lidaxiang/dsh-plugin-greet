@@ -6,7 +6,7 @@
 
 [English](../README.md) | 简体中文
 
-一个面向新手、可直接安装的 DeepSeek Harness 社区插件，用来演示 Bundle 分发、Profile 装配、插件配置、工具 Schema、结构化输出、输入校验、自动测试和真实模型调用。
+一个面向新手、可直接安装的 DeepSeek Harness 社区插件，用来演示 Bundle 分发、Profile 装配、插件配置、新版 `defineTool()` 接口、结构化输出、输入校验、自动测试和真实模型调用。
 
 > 本项目是社区示例，不是 DeepSeek AI 官方插件。DeepSeek Harness 目前仍处于 Developer Preview，后续版本可能需要调整兼容性。
 
@@ -30,6 +30,7 @@
 
 - 导出经过校验的插件 `Config`
 - 注入并使用 Harness 的 `tools` 服务
+- 使用新版 `defineTool()` Schema DSL 注册工具
 - 必填和可选工具参数
 - 中文和英文问候
 - 友好和正式两种语气
@@ -83,10 +84,12 @@ Hello, Ada!
 
 ## 从 npm 安装
 
+`0.3.x` 需要 Node.js `^22.19.0` 或 `>=24.0.0`，适配 DeepSeek Harness `0.1.1` 候选版本系列。
+
 先停止正在运行的 DeepSeek Harness，然后把包装进 `web` Profile：
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add dsh-plugin-greet@0.2.0
+npx @deepseek-ai/dsh plugin --profile web add dsh-plugin-greet@0.3.0
 ```
 
 这条命令不只是普通的 `npm install`：它会把包装进指定的 Harness Profile，并把包声明的 Bundle 加入 Profile 组合配置。
@@ -199,7 +202,7 @@ npm test
 npm run check
 ```
 
-测试覆盖配置默认值、工具注册信息、四种问候模式、结构化输出渲染、空白处理、非法值、未知参数和长度限制。GitHub Actions 会在 Node.js 20 和 22 上执行同样的检查。
+测试会导入真实 Harness 工具接口，并覆盖配置默认值、工具注册信息、四种问候模式、结构化输出渲染、空白处理、非法值、未知参数和长度限制。GitHub Actions 会在 Node.js 22.19 和 24 上执行同样的检查。
 
 ## 常见问题
 
@@ -218,6 +221,18 @@ npm run check
 ### 修改配置后没有生效
 
 确认后应用的 patch 使用相同的 `id`（`greet-tool`），并同时写出包 `name` 和完整 `config`。
+
+### Harness 源码仓库在 `git pull` 后无法启动
+
+切换到支持的 Node.js 版本，刷新依赖，清理旧生成产物后再构建：
+
+```sh
+nvm use 22.22.3
+pnpm install --frozen-lockfile
+pnpm run clean
+pnpm run build
+pnpm dsh --profile web --no-open
+```
 
 ## 文件结构
 
@@ -242,9 +257,9 @@ dsh-plugin-greet/
 
 DeepSeek Harness 插件运行在宿主进程中。安装第三方插件前请检查源码，并优先固定 release tag 或 commit SHA。
 
-插件不访问网络、文件系统、Shell 或凭据，只依赖 DeepSeek AI 官方的 `@deepseek-ai/schemastery` 完成配置校验。
+插件不访问网络、文件系统、Shell 或凭据。它使用 DeepSeek AI 官方的 `@deepseek-ai/dsh-tools` 注册类型化工具，并使用 `@deepseek-ai/schemastery` 完成配置校验。
 
-最初的 `0.1.x` 版本已使用 `@deepseek-ai/dsh 0.1.0-rc.6` 完成验证。升级 Harness 版本后，建议重新运行项目测试并做一次真实 Profile 安装。
+`0.3.x` 已使用 `@deepseek-ai/dsh 0.1.1-rc.1` 完成验证；最初的 `0.1.x` 面向 `0.1.0-rc.6`。升级 Harness 版本后，建议重新运行项目测试并做一次真实 Profile 安装。
 
 ## License
 
