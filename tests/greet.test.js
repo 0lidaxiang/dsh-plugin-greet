@@ -67,6 +67,7 @@ describe('greet plugin', () => {
       style: 'formal',
     })
     assert.equal((await tool.execute({ name: 'Ada', style: 'formal' })).message, 'Greetings, Ada.')
+    assert.equal((await tool.execute({ name: '小明', language: 'zh' })).message, '你好，小明！')
   })
 
   it('renders only the human-readable message for the model', async () => {

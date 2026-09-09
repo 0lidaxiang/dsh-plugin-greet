@@ -84,31 +84,33 @@ Hello, Ada!
 
 ## 从 npm 安装
 
-`0.3.x` 需要 Node.js `^22.19.0` 或 `>=24.0.0`，适配 DeepSeek Harness `0.1.1` 候选版本系列。
+使用 Node.js `^22.19.0` 或 `>=24.0.0`，并安装 pnpm（`npm install -g pnpm@10.32.1`）以管理 Profile 插件。开发依赖以 Harness `0.1.2-rc.1` 为基准，CI 同时验证 `0.1.5-alpha.1`。以下命令固定使用本仓库已验证的默认发布版。
 
 先停止正在运行的 DeepSeek Harness，然后把包装进 `web` Profile：
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add dsh-plugin-greet@0.3.0
+npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add dsh-plugin-greet@0.3.0
 ```
+
+npm 已发布的 `0.3.0` 使用相同的工具实现，但 peer 依赖声明仍是旧版。下次 npm 发布前，可按[从 GitHub 安装](#从-github-安装)获取更新后的依赖声明。
 
 这条命令不只是普通的 `npm install`：它会把包装进指定的 Harness Profile，并把包声明的 Bundle 加入 Profile 组合配置。
 
 启动前确认 Bundle 已进入最终配置：
 
 ```sh
-npx @deepseek-ai/dsh --profile web --dump-config
+npx @deepseek-ai/dsh@0.1.2-rc.1 --profile web --dump-config
 ```
 
 然后启动 Web UI：
 
 ```sh
-npx @deepseek-ai/dsh web
+npx @deepseek-ai/dsh@0.1.2-rc.1 web
 ```
 
 ## 调用工具
 
-打开 [http://127.0.0.1:3080](http://127.0.0.1:3080)，发送：
+使用启动命令自动打开的页面，或打开终端打印的完整地址，保留其中的 `?token=...` 参数。默认端口为 3080。首次访问会建立浏览器登录状态，然后跳转到不带参数的地址；没有有效登录状态时，直接打开裸地址会返回 401。随后发送：
 
 ```text
 请务必调用 greet 工具，用友好的英文向 Ada 问好。
@@ -171,7 +173,7 @@ defaultStyle: friendly
 安装当前开发分支：
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add \
+npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add \
   github:0lidaxiang/dsh-plugin-greet#master
 ```
 
@@ -182,7 +184,7 @@ npx @deepseek-ai/dsh plugin --profile web add \
 在仓库上一级目录执行：
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add ./dsh-plugin-greet
+npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add ./dsh-plugin-greet
 ```
 
 修改代码后重启 DeepSeek Harness，再通过聊天窗口验证工具调用。
@@ -192,7 +194,7 @@ npx @deepseek-ai/dsh plugin --profile web add ./dsh-plugin-greet
 安装依赖并运行单元测试：
 
 ```sh
-npm install
+npm ci
 npm test
 ```
 
@@ -202,7 +204,18 @@ npm test
 npm run check
 ```
 
-测试会导入真实 Harness 工具接口，并覆盖配置默认值、工具注册信息、四种问候模式、结构化输出渲染、空白处理、非法值、未知参数和长度限制。GitHub Actions 会在 Node.js 22.19 和 24 上执行同样的检查。
+测试会导入真实 Harness 工具接口，并覆盖配置默认值、工具注册信息、四种问候模式、结构化输出渲染、空白处理、非法值、未知参数和长度限制。GitHub Actions 会在 Node.js 22.19 和 24 上执行这些检查。
+
+运行与 CI 相同的兼容性检查（需要 pnpm 和 npm registry 网络访问）：
+
+```sh
+npm run test:compat -- 0.1.2-rc.1
+npm run test:compat -- 0.1.5-alpha.1
+```
+
+每次检查会在临时目录安装指定 Harness，使用该版本运行单元测试，再把当前代码打包，通过真实 Profile CLI 安装 tarball，并在本机回环地址的空闲端口启动 Web。检查覆盖四种问候、非法参数、启动令牌登录流程和 HTML 响应，结束后停止服务并删除临时 Profile。检查不会调用模型或使用你现有的 Profile。CI 会覆盖两个 Harness 版本与两个 Node 版本的全部组合。
+
+升级 Harness 开发包时要同步更新 Cordis：这两个 Harness 版本需要 Cordis `4.0.2`。`dsh-tools` 和 `dsh-system-prompt` 应固定为匹配版本；`dsh-tools` 的 npm `latest` 标签并不跟随 CLI 的 `latest` 标签。
 
 ## 常见问题
 
@@ -217,6 +230,14 @@ npm run check
 ### `npm install dsh-plugin-greet` 成功了，但工具仍然不存在
 
 普通 npm 安装只会把依赖加入当前 Node.js 项目。请使用 `dsh plugin --profile <name> add ...` 把 Bundle 安装并装配进 Harness Profile。
+
+### Web 页面返回 401
+
+打开当前 Harness 进程在终端打印的完整启动地址，保留 `?token=...` 参数以建立浏览器登录状态。旧进程的令牌，或没有有效登录状态时使用的裸地址，都无法完成登录。
+
+### 安装时提示缺少 Harness peer 依赖
+
+官方 Profile 关闭了自动安装 peer 依赖，在启动时从宿主解析 Harness 服务，因此 pnpm 在安装阶段可能提示缺少 peer。确认使用下方列出的兼容版本，检查 `--dump-config`，再重启 Harness。不要为了消除警告而给 Profile 单独安装一份 `dsh-tools`，插件应使用宿主的服务。
 
 ### 修改配置后没有生效
 
@@ -245,6 +266,8 @@ dsh-plugin-greet/
 │   ├── README.zh-CN.md       # 中文文档
 │   ├── greet-tool-result.png # README 截图
 │   └── readme-hero.webp      # 轻量 README 横幅
+├── scripts/check-compat.mjs # 发布包安装与 Web 兼容性检查
+├── scripts/fixtures/        # 临时 Web Profile 使用的工具运行时探针
 ├── tests/greet.test.js       # Node.js 单元测试
 ├── cordis.patch.yml          # 把插件插入 Profile
 ├── index.js                  # Config 与 greet 工具实现
@@ -259,7 +282,7 @@ DeepSeek Harness 插件运行在宿主进程中。安装第三方插件前请检
 
 插件不访问网络、文件系统、Shell 或凭据。它使用 DeepSeek AI 官方的 `@deepseek-ai/dsh-tools` 注册类型化工具，并使用 `@deepseek-ai/schemastery` 完成配置校验。
 
-`0.3.x` 已使用 `@deepseek-ai/dsh 0.1.1-rc.1` 完成验证；最初的 `0.1.x` 面向 `0.1.0-rc.6`。升级 Harness 版本后，建议重新运行项目测试并做一次真实 Profile 安装。
+当前代码已验证 Harness `0.1.2-rc.1` 和 `0.1.5-alpha.1`。peer 声明明确包含这两个已测试的预发布版本，并保留原来的 `^0.1.1-rc.1` 范围，不会自动接受后续所有预发布系列。早期 `0.3.0` 使用 `0.1.1-rc.1` 完成验证，最初的 `0.1.x` 插件面向 `0.1.0-rc.6`。如需使用已测试的预览版，请把安装和启动命令中的 `@deepseek-ai/dsh@0.1.2-rc.1` 统一替换为 `@deepseek-ai/dsh@0.1.5-alpha.1`。新增 Harness 版本时，应重新运行兼容性检查。
 
 ## License
 

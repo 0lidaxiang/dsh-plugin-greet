@@ -84,31 +84,33 @@ This separation lets other plugins or policies use the structured fields without
 
 ## Install from npm
 
-Version `0.3.x` requires Node.js `^22.19.0` or `>=24.0.0` and targets the DeepSeek Harness `0.1.1` release-candidate line.
+Use Node.js `^22.19.0` or `>=24.0.0` and install pnpm (`npm install -g pnpm@10.32.1`) for profile plugin management. Development dependencies target Harness `0.1.2-rc.1`; CI also verifies `0.1.5-alpha.1`. The commands below pin the default release tested by this repository.
 
 Stop any running DeepSeek Harness instance, then install the package into the `web` profile:
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add dsh-plugin-greet@0.3.0
+npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add dsh-plugin-greet@0.3.0
 ```
+
+The published `0.3.0` package has the same tool implementation but older peer dependency metadata. Use the [GitHub installation](#install-from-github) to get the updated dependency declarations before the next npm release.
 
 This command does more than a regular `npm install`: it installs the package into the selected Harness profile and adds its declared bundle to the profile composition.
 
 Before starting, confirm that the bundle is present in the final configuration:
 
 ```sh
-npx @deepseek-ai/dsh --profile web --dump-config
+npx @deepseek-ai/dsh@0.1.2-rc.1 --profile web --dump-config
 ```
 
 Then start the Web UI:
 
 ```sh
-npx @deepseek-ai/dsh web
+npx @deepseek-ai/dsh@0.1.2-rc.1 web
 ```
 
 ## Try the tool
 
-Open [http://127.0.0.1:3080](http://127.0.0.1:3080) and send:
+Use the page opened by the launcher, or open the complete URL printed in the terminal, including its `?token=...` query. The default port is 3080. The first visit establishes a browser session and redirects to the clean URL; opening the bare address without a valid session returns 401. Then send:
 
 ```text
 You must use the greet tool to greet Ada in a friendly English style.
@@ -171,7 +173,7 @@ Later patch layers replace the entire row configuration rather than deep-merging
 To install the current development branch:
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add \
+npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add \
   github:0lidaxiang/dsh-plugin-greet#master
 ```
 
@@ -182,7 +184,7 @@ For stable usage, prefer a published npm version, release tag, or specific commi
 Run this command from the parent directory of the repository:
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add ./dsh-plugin-greet
+npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add ./dsh-plugin-greet
 ```
 
 After changing the code, restart DeepSeek Harness and verify the tool through the chat interface.
@@ -192,7 +194,7 @@ After changing the code, restart DeepSeek Harness and verify the tool through th
 Install dependencies and run the unit tests:
 
 ```sh
-npm install
+npm ci
 npm test
 ```
 
@@ -202,7 +204,18 @@ Run the complete local check, including the npm package preview:
 npm run check
 ```
 
-The test suite imports the real Harness tool API and verifies configuration defaults, registration metadata, all four greeting modes, structured output rendering, whitespace normalization, invalid values, unknown arguments, and length limits. GitHub Actions runs the same checks on Node.js 22.19 and 24.
+The test suite imports the real Harness tool API and verifies configuration defaults, registration metadata, all four greeting modes, structured output rendering, whitespace normalization, invalid values, unknown arguments, and length limits. GitHub Actions runs these checks on Node.js 22.19 and 24.
+
+Run the same compatibility checks as CI (requires pnpm and registry access):
+
+```sh
+npm run test:compat -- 0.1.2-rc.1
+npm run test:compat -- 0.1.5-alpha.1
+```
+
+Each check installs the selected Harness into a temporary directory, runs the unit tests against it, packs this checkout, installs that tarball through the real profile CLI, and starts Web on an available loopback port. It verifies all four greetings, invalid arguments, the launch-token login flow, and the HTML response, then stops the server and removes the temporary profile. It does not call a model or use your existing profile. CI runs both Harness versions on both Node versions.
+
+Update Cordis alongside the Harness development packages: these Harness versions require Cordis `4.0.2`. Pin matching versions of `dsh-tools` and `dsh-system-prompt`; the `dsh-tools` npm `latest` tag does not track the CLI's `latest` tag.
 
 ## Troubleshooting
 
@@ -217,6 +230,14 @@ Stop the running Harness process, reinstall the plugin into the same profile, in
 ### `npm install dsh-plugin-greet` worked, but the tool is missing
 
 A regular npm install only adds a dependency to the current Node.js project. Use `dsh plugin --profile <name> add ...` to install and compose the bundle into a Harness profile.
+
+### The Web page returns 401
+
+Open the complete launch URL printed by the current Harness process, including `?token=...`, to establish a browser session. An old process's token or a bare URL in a browser without a valid session will not log you in.
+
+### Installation reports a missing Harness peer
+
+The official profile disables automatic peer installation and resolves Harness services from the host at startup, so pnpm can report a missing peer during installation. Check the supported version below, inspect `--dump-config`, and restart Harness. Avoid adding a separate copy of `dsh-tools` to the profile to silence this warning; the plugin should use the host's service.
 
 ### My configuration did not take effect
 
@@ -245,6 +266,8 @@ dsh-plugin-greet/
 │   ├── README.zh-CN.md       # Chinese documentation
 │   ├── greet-tool-result.png # README screenshot
 │   └── readme-hero.webp      # Lightweight README hero
+├── scripts/check-compat.mjs # Packed installation and Web compatibility check
+├── scripts/fixtures/        # Tool runtime probe for the temporary Web profile
 ├── tests/greet.test.js       # Node.js unit tests
 ├── cordis.patch.yml          # Inserts the plugin into a profile
 ├── index.js                  # Config and greet tool implementation
@@ -259,7 +282,7 @@ DeepSeek Harness plugins run inside the host process. Review third-party plugin 
 
 The plugin has no network, filesystem, shell, or credential access. It uses the official `@deepseek-ai/dsh-tools` package for typed tool registration and `@deepseek-ai/schemastery` for configuration validation.
 
-The `0.3.x` release line is verified with `@deepseek-ai/dsh 0.1.1-rc.1`. The original `0.1.x` line targeted `0.1.0-rc.6`. Run the included tests and a real profile installation when upgrading Harness versions.
+The current checkout is verified with Harness `0.1.2-rc.1` and `0.1.5-alpha.1`. Its peer declaration explicitly includes these tested prereleases and retains the original `^0.1.1-rc.1` range; it does not automatically accept future prerelease lines. Earlier `0.3.0` verification used `0.1.1-rc.1`, and the original `0.1.x` plugin targeted `0.1.0-rc.6`. To try the tested preview, replace `@deepseek-ai/dsh@0.1.2-rc.1` with `@deepseek-ai/dsh@0.1.5-alpha.1` consistently in the installation and launch commands. Run the compatibility checks again when adding a new Harness version.
 
 ## License
 
