@@ -89,10 +89,10 @@ Hello, Ada!
 先停止正在运行的 DeepSeek Harness，然后把包装进 `web` Profile：
 
 ```sh
-npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add dsh-plugin-greet@0.3.0
+npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add dsh-plugin-greet@0.3.1
 ```
 
-npm 已发布的 `0.3.0` 使用相同的工具实现，但 peer 依赖声明仍是旧版。下次 npm 发布前，可按[从 GitHub 安装](#从-github-安装)获取更新后的依赖声明。
+`0.3.1` 更新了已验证 Harness 版本的依赖声明，问候行为与 `0.3.0` 相同。
 
 这条命令不只是普通的 `npm install`：它会把包装进指定的 Harness Profile，并把包声明的 Bundle 加入 Profile 组合配置。
 

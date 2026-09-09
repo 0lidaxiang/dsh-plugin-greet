@@ -89,10 +89,10 @@ Use Node.js `^22.19.0` or `>=24.0.0` and install pnpm (`npm install -g pnpm@10.3
 Stop any running DeepSeek Harness instance, then install the package into the `web` profile:
 
 ```sh
-npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add dsh-plugin-greet@0.3.0
+npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add dsh-plugin-greet@0.3.1
 ```
 
-The published `0.3.0` package has the same tool implementation but older peer dependency metadata. Use the [GitHub installation](#install-from-github) to get the updated dependency declarations before the next npm release.
+Version `0.3.1` updates the dependency declarations for the tested Harness releases. Its greeting behavior is unchanged from `0.3.0`.
 
 This command does more than a regular `npm install`: it installs the package into the selected Harness profile and adds its declared bundle to the profile composition.
 

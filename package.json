@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-greet",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A beginner-friendly configurable greet tool plugin for DeepSeek Harness.",
   "license": "MIT",
   "keywords": [
