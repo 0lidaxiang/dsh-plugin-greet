@@ -14,7 +14,12 @@ const version = process.argv[2] ?? manifest.devDependencies['@deepseek-ai/dsh-to
 assert.match(version, /^\d+\.\d+\.\d+(?:-[\w.-]+)?$/, 'Pass an explicit Harness version')
 const work = await mkdtemp(join(tmpdir(), 'greet-compat-'))
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm'
-const env = { ...process.env, DSH_HOME: join(work, 'home'), DSH_TELEMETRY_DISABLED: '1' }
+const env = {
+  ...process.env,
+  DSH_HOME: join(work, 'home'),
+  DSH_TELEMETRY_DISABLED: '1',
+  npm_config_registry: 'https://registry.npmjs.org',
+}
 const redact = text => text.replace(/token=[A-Za-z0-9_-]+/g, 'token=[REDACTED]')
 
 async function run(command, args, cwd = work) {
@@ -83,6 +88,11 @@ async function checkWeb(bin, patch) {
 }
 
 try {
+  // Each release line may require a different (including prerelease) Cordis.
+  const peers = JSON.parse(await run(npm, [
+    'view', `@deepseek-ai/dsh-tools@${version}`, 'peerDependencies', '--json',
+  ]))
+  assert.equal(typeof peers['@deepseek-ai/cordis'], 'string')
   // The local lockfile stays untouched; each matrix cell owns its host installation.
   await writeFile(join(work, 'package.json'), JSON.stringify({
     private: true,
@@ -91,7 +101,7 @@ try {
       '@deepseek-ai/dsh': version,
       '@deepseek-ai/dsh-tools': version,
       '@deepseek-ai/dsh-system-prompt': version,
-      '@deepseek-ai/cordis': manifest.devDependencies['@deepseek-ai/cordis'],
+      '@deepseek-ai/cordis': peers['@deepseek-ai/cordis'],
       '@deepseek-ai/schemastery': manifest.dependencies['@deepseek-ai/schemastery'],
     },
   }, null, 2))

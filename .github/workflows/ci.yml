@@ -30,7 +30,7 @@ jobs:
       fail-fast: false
       matrix:
         node-version: ['22.19.0', '24']
-        harness-version: ['0.1.2-rc.1', '0.1.5-alpha.1']
+        harness-version: ['0.2.0-rc.2', '0.2.1-alpha.1']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

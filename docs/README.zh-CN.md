@@ -84,28 +84,28 @@ Hello, Ada!
 
 ## 从 npm 安装
 
-使用 Node.js `^22.19.0` 或 `>=24.0.0`，并安装 pnpm（`npm install -g pnpm@10.32.1`）以管理 Profile 插件。开发依赖以 Harness `0.1.2-rc.1` 为基准，CI 同时验证 `0.1.5-alpha.1`。以下命令固定使用本仓库已验证的默认发布版。
+使用 Node.js `^22.19.0` 或 `>=24.0.0`，并安装 pnpm（`npm install -g pnpm@10.32.1`）以管理 Profile 插件。开发依赖以 Harness `0.2.0-rc.2` 为基准，CI 同时验证 `0.2.1-alpha.1`。以下命令固定使用本仓库已验证的默认发布版。
 
 先停止正在运行的 DeepSeek Harness，然后把包装进 `web` Profile：
 
 ```sh
-npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add dsh-plugin-greet@0.3.1
+npx @deepseek-ai/dsh@0.2.0-rc.2 plugin --profile web add dsh-plugin-greet@0.3.2
 ```
 
-`0.3.1` 更新了已验证 Harness 版本的依赖声明，问候行为与 `0.3.0` 相同。
+`0.3.2` 针对 Harness 0.2 更新了开发依赖和兼容性检查，问候行为与 `0.3.0` 相同。
 
 这条命令不只是普通的 `npm install`：它会把包装进指定的 Harness Profile，并把包声明的 Bundle 加入 Profile 组合配置。
 
 启动前确认 Bundle 已进入最终配置：
 
 ```sh
-npx @deepseek-ai/dsh@0.1.2-rc.1 --profile web --dump-config
+npx @deepseek-ai/dsh@0.2.0-rc.2 --profile web --dump-config
 ```
 
 然后启动 Web UI：
 
 ```sh
-npx @deepseek-ai/dsh@0.1.2-rc.1 web
+npx @deepseek-ai/dsh@0.2.0-rc.2 web
 ```
 
 ## 调用工具
@@ -173,7 +173,7 @@ defaultStyle: friendly
 安装当前开发分支：
 
 ```sh
-npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add \
+npx @deepseek-ai/dsh@0.2.0-rc.2 plugin --profile web add \
   github:0lidaxiang/dsh-plugin-greet#master
 ```
 
@@ -184,7 +184,7 @@ npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add \
 在仓库上一级目录执行：
 
 ```sh
-npx @deepseek-ai/dsh@0.1.2-rc.1 plugin --profile web add ./dsh-plugin-greet
+npx @deepseek-ai/dsh@0.2.0-rc.2 plugin --profile web add ./dsh-plugin-greet
 ```
 
 修改代码后重启 DeepSeek Harness，再通过聊天窗口验证工具调用。
@@ -209,13 +209,13 @@ npm run check
 运行与 CI 相同的兼容性检查（需要 pnpm 和 npm registry 网络访问）：
 
 ```sh
-npm run test:compat -- 0.1.2-rc.1
-npm run test:compat -- 0.1.5-alpha.1
+npm run test:compat -- 0.2.0-rc.2
+npm run test:compat -- 0.2.1-alpha.1
 ```
 
 每次检查会在临时目录安装指定 Harness，使用该版本运行单元测试，再把当前代码打包，通过真实 Profile CLI 安装 tarball，并在本机回环地址的空闲端口启动 Web。检查覆盖四种问候、非法参数、启动令牌登录流程和 HTML 响应，结束后停止服务并删除临时 Profile。检查不会调用模型或使用你现有的 Profile。CI 会覆盖两个 Harness 版本与两个 Node 版本的全部组合。
 
-升级 Harness 开发包时要同步更新 Cordis：这两个 Harness 版本需要 Cordis `4.0.2`。`dsh-tools` 和 `dsh-system-prompt` 应固定为匹配版本；`dsh-tools` 的 npm `latest` 标签并不跟随 CLI 的 `latest` 标签。
+升级 Harness 开发包时要同步更新 Cordis：`0.2.0-rc.2` 要求 `~4.0.4`，`0.2.1-alpha.1` 要求 `~4.0.5-alpha.1`。兼容性脚本会从官方 npm registry 读取所选版本的 Cordis peer 要求，不再复用开发环境中的固定版本。`dsh-tools` 和 `dsh-system-prompt` 应固定为匹配版本；`dsh-tools` 的 npm `latest` 标签并不跟随 CLI 的 `latest` 标签。
 
 ## 常见问题
 
@@ -282,7 +282,9 @@ DeepSeek Harness 插件运行在宿主进程中。安装第三方插件前请检
 
 插件不访问网络、文件系统、Shell 或凭据。它使用 DeepSeek AI 官方的 `@deepseek-ai/dsh-tools` 注册类型化工具，并使用 `@deepseek-ai/schemastery` 完成配置校验。
 
-当前代码已验证 Harness `0.1.2-rc.1` 和 `0.1.5-alpha.1`。peer 声明明确包含这两个已测试的预发布版本，并保留原来的 `^0.1.1-rc.1` 范围，不会自动接受后续所有预发布系列。早期 `0.3.0` 使用 `0.1.1-rc.1` 完成验证，最初的 `0.1.x` 插件面向 `0.1.0-rc.6`。如需使用已测试的预览版，请把安装和启动命令中的 `@deepseek-ai/dsh@0.1.2-rc.1` 统一替换为 `@deepseek-ai/dsh@0.1.5-alpha.1`。新增 Harness 版本时，应重新运行兼容性检查。
+当前代码已验证 Harness `0.2.0-rc.2` 和 `0.2.1-alpha.1`。peer 声明明确包含这两个已测试的预发布版本，保留历史验证过的 `0.1.2-rc.1` / `0.1.5-alpha.1` 和原来的 `^0.1.1-rc.1` 范围，不会自动接受后续所有预发布系列。早期 `0.3.0` 使用 `0.1.1-rc.1` 完成验证，最初的 `0.1.x` 插件面向 `0.1.0-rc.6`。如需使用已测试的预览版，请把安装和启动命令中的 `@deepseek-ai/dsh@0.2.0-rc.2` 统一替换为 `@deepseek-ai/dsh@0.2.1-alpha.1`。新增 Harness 版本时，应重新运行兼容性检查。
+
+旧基线 `0.1.2-rc.1` 和 `0.1.5-alpha.1` 的全新安装不再纳入 CI：上游的宽松依赖范围如今可能混装不兼容的 Harness 服务。2026 年 10 月 7 日复查时，前者启动缺少 HMR 服务，后者出现 peer 依赖解析冲突。新安装请使用上方固定版本的命令；本次未重新验证已有的旧版安装环境。
 
 ## License
 
