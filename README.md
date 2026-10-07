@@ -82,6 +82,30 @@ This separation lets other plugins or policies use the structured fields without
 | Chinese | Friendly | `你好，小明！` |
 | Chinese | Formal | `您好，小明。` |
 
+## Supported dsh versions
+
+For `dsh-plugin-greet@0.3.2`, use **`@deepseek-ai/dsh@0.2.0-rc.2`**. The preview **`0.2.1-alpha.1`** is also verified. Compatibility is stated for these exact releases, not all `0.2.x` versions.
+
+Last checked: **October 7, 2026**.
+
+| Plugin version tested | dsh version | Status |
+| --- | --- | --- |
+| `0.3.2` | `0.2.0-rc.2` | Supported; recommended installation target; current CI |
+| `0.3.2` | `0.2.1-alpha.1` | Supported preview; current CI |
+| `0.3.0` / `0.3.1` | `0.1.2-rc.1` | Historical verification only; fresh-install recheck now fails at Web startup with a missing HMR service |
+| `0.3.0` / `0.3.1` | `0.1.5-alpha.1` | Historical verification only; fresh-install recheck now fails with an upstream peer-dependency conflict |
+| `0.3.0` | `0.1.1-rc.1` | Historical verification only; not revalidated for plugin `0.3.2` |
+| `0.1.x` | `0.1.0-rc.6` | Original plugin target; not revalidated for plugin `0.3.2` |
+| Any | Other dsh versions | Unverified; run the compatibility checks before relying on them |
+
+Current verification covers Node.js 22.19 and 24 in CI: unit tests, installation of the packed plugin through the profile CLI, four greeting modes, invalid arguments, Web startup, launch-token login, and HTML responses. It does not include a real model request. See the [passing 0.3.2 CI run](https://github.com/0lidaxiang/dsh-plugin-greet/actions/runs/37595351660).
+
+The old Harness releases use broad upstream dependency ranges that can now resolve incompatible services. Their fresh-install failures do not prove the greeting implementation is incompatible with an already-installed old environment; those existing environments were not revalidated. For new installations, use one of the two supported releases above.
+
+The `@deepseek-ai/dsh-tools` peer declaration retains historical ranges for existing installations. A version satisfying that declaration is not by itself a tested dsh compatibility guarantee. New Harness releases need another compatibility check before being added to the supported list.
+
+To use the verified preview, replace `@deepseek-ai/dsh@0.2.0-rc.2` with `@deepseek-ai/dsh@0.2.1-alpha.1` consistently in the installation and launch commands below.
+
 ## Install from npm
 
 Use Node.js `^22.19.0` or `>=24.0.0` and install pnpm (`npm install -g pnpm@10.32.1`) for profile plugin management. Development dependencies target Harness `0.2.0-rc.2`; CI also verifies `0.2.1-alpha.1`. The commands below pin the default release tested by this repository.
@@ -282,9 +306,7 @@ DeepSeek Harness plugins run inside the host process. Review third-party plugin 
 
 The plugin has no network, filesystem, shell, or credential access. It uses the official `@deepseek-ai/dsh-tools` package for typed tool registration and `@deepseek-ai/schemastery` for configuration validation.
 
-The current checkout is verified with Harness `0.2.0-rc.2` and `0.2.1-alpha.1`. Its peer declaration explicitly includes these tested prereleases and retains the historically tested `0.1.2-rc.1` / `0.1.5-alpha.1` versions and original `^0.1.1-rc.1` range; it does not automatically accept future prerelease lines. Earlier `0.3.0` verification used `0.1.1-rc.1`, and the original `0.1.x` plugin targeted `0.1.0-rc.6`. To try the tested preview, replace `@deepseek-ai/dsh@0.2.0-rc.2` with `@deepseek-ai/dsh@0.2.1-alpha.1` consistently in the installation and launch commands. Run the compatibility checks again when adding a new Harness version.
-
-Fresh installs of the old `0.1.2-rc.1` and `0.1.5-alpha.1` baselines are no longer part of CI: their broad upstream dependency ranges can now mix incompatible Harness services. The October 7, 2026 recheck encountered a missing HMR service on `0.1.2-rc.1` and a peer-resolution conflict on `0.1.5-alpha.1`. Use the current pinned commands above for a new installation. Existing old installations were not revalidated.
+See [Supported dsh versions](#supported-dsh-versions) for current support, historical verification, and known installation limitations.
 
 ## License
 
