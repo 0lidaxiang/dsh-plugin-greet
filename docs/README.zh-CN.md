@@ -84,7 +84,7 @@ Hello, Ada!
 
 ## 支持的 dsh 版本
 
-`dsh-plugin-greet@0.3.4` 推荐搭配 **`@deepseek-ai/dsh@0.2.1-rc.5`**。预览版 **`0.2.2-alpha.2`** 也已验证通过。兼容结论针对这两个精确版本，不代表所有 `0.2.x` 都已验证。
+`dsh-plugin-greet@0.3.5` 推荐搭配 **`@deepseek-ai/dsh@0.2.1-rc.5`**。预览版 **`0.2.2-alpha.2`** 也已验证通过。兼容结论针对这两个精确版本，不代表所有 `0.2.x` 都已验证。
 
 最近验证日期：**2026 年 11 月 1 日**。
 
@@ -114,7 +114,7 @@ dsh `0.2.1-rc.5` 使用 Node.js `^22.19.0` 或 `>=24.0.0`；预览版 `0.2.2-alp
 先停止正在运行的 DeepSeek Harness，然后把包装进 `web` Profile：
 
 ```sh
-npx @deepseek-ai/dsh@0.2.1-rc.5 plugin --profile web add dsh-plugin-greet@0.3.4
+npx @deepseek-ai/dsh@0.2.1-rc.5 plugin --profile web add dsh-plugin-greet@0.3.5
 ```
 
 `0.3.3` 更新了新版安装器要求的兼容声明，并适配预览版拆分后的工具执行器和批量调用测试，问候行为与 `0.3.0` 相同。
@@ -280,7 +280,7 @@ GitHub Actions 的 `Publish npm package` 工作流首先验证 npm 12 默认策�
 
 ### 安装被拒绝，提示版本不兼容
 
-新版 Harness 会强制检查声明的 `dsh-tools` peer 范围。使用当前兼容性表中的 dsh 版本时，请升级到 `dsh-plugin-greet@0.3.4`。pnpm 安装时的缺少 peer 警告，与 Harness 拒绝不支持的版本是两种情况。其他 dsh 版本应先完成兼容性验证，再加入声明。
+新版 Harness 会强制检查声明的 `dsh-tools` peer 范围。使用当前兼容性表中的 dsh 版本时，请升级到 `dsh-plugin-greet@0.3.5`。pnpm 安装时的缺少 peer 警告，与 Harness 拒绝不支持的版本是两种情况。其他 dsh 版本应先完成兼容性验证，再加入声明。
 
 ### 修改配置后没有生效
 

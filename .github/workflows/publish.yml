@@ -39,6 +39,10 @@ jobs:
         run: node --input-type=module -e "import assert from 'node:assert/strict'; import fs from 'node:fs'; const p = JSON.parse(fs.readFileSync('package.json')); assert.equal(process.env.GITHUB_REF, 'refs/tags/v' + p.version)"
       - name: Pack verified package
         run: npm pack --pack-destination "$RUNNER_TEMP"
+      - name: Validate packed publication without uploading
+        run: |
+          version=$(node -p "require('./package.json').version")
+          npm publish "$RUNNER_TEMP/dsh-plugin-greet-$version.tgz" --dry-run --access public --registry=https://registry.npmjs.org
       - uses: actions/upload-artifact@v4
         with:
           name: npm-package
@@ -65,6 +69,6 @@ jobs:
       - name: Publish verified tarball through OIDC
         run: |
           shopt -s nullglob
-          tarballs=(package/*.tgz)
+          tarballs=("$PWD"/package/*.tgz)
           test "${#tarballs[@]}" -eq 1
           npm publish "${tarballs[0]}" --access public --registry=https://registry.npmjs.org
