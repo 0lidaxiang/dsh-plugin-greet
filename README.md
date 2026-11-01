@@ -84,52 +84,53 @@ This separation lets other plugins or policies use the structured fields without
 
 ## Supported dsh versions
 
-For `dsh-plugin-greet@0.3.2`, use **`@deepseek-ai/dsh@0.2.0-rc.2`**. The preview **`0.2.1-alpha.1`** is also verified. Compatibility is stated for these exact releases, not all `0.2.x` versions.
+For `dsh-plugin-greet@0.3.3`, use **`@deepseek-ai/dsh@0.2.1-rc.5`**. The preview **`0.2.2-alpha.2`** is also verified. Compatibility is stated for these exact releases, not all `0.2.x` versions.
 
-Last checked: **October 7, 2026**.
+Last checked: **November 1, 2026**.
 
 | Plugin version tested | dsh version | Status |
 | --- | --- | --- |
-| `0.3.2` | `0.2.0-rc.2` | Supported; recommended installation target; current CI |
-| `0.3.2` | `0.2.1-alpha.1` | Supported preview; current CI |
-| `0.3.0` / `0.3.1` | `0.1.2-rc.1` | Historical verification only; fresh-install recheck now fails at Web startup with a missing HMR service |
-| `0.3.0` / `0.3.1` | `0.1.5-alpha.1` | Historical verification only; fresh-install recheck now fails with an upstream peer-dependency conflict |
-| `0.3.0` | `0.1.1-rc.1` | Historical verification only; not revalidated for plugin `0.3.2` |
-| `0.1.x` | `0.1.0-rc.6` | Original plugin target; not revalidated for plugin `0.3.2` |
+| `0.3.3` | `0.2.1-rc.5` | Supported; recommended installation target; current CI |
+| `0.3.3` | `0.2.2-alpha.2` | Supported preview; requires Node.js `>=24.9.0`; current CI |
+| `0.3.2` | `0.2.0-rc.2` / `0.2.1-alpha.1` | Verified on October 7; not revalidated for plugin `0.3.3` |
+| `0.3.0` / `0.3.1` | `0.1.2-rc.1` | Historical verification only; October 7 fresh-install recheck failed at Web startup with a missing HMR service |
+| `0.3.0` / `0.3.1` | `0.1.5-alpha.1` | Historical verification only; October 7 fresh-install recheck failed with an upstream peer-dependency conflict |
+| `0.3.0` | `0.1.1-rc.1` | Historical verification only; not revalidated for plugin `0.3.3` |
+| `0.1.x` | `0.1.0-rc.6` | Original plugin target; not revalidated for plugin `0.3.3` |
 | Any | Other dsh versions | Unverified; run the compatibility checks before relying on them |
 
-Current verification covers Node.js 22.19 and 24 in CI: unit tests, installation of the packed plugin through the profile CLI, four greeting modes, invalid arguments, Web startup, launch-token login, and HTML responses. It does not include a real model request. See the [passing 0.3.2 CI run](https://github.com/0lidaxiang/dsh-plugin-greet/actions/runs/37595351660).
+Current CI covers dsh `0.2.1-rc.5` on Node.js 22.19 and 24, and dsh `0.2.2-alpha.2` on Node.js 24.9 and 24: unit tests, installation of the packed plugin through the profile CLI, four greeting modes, invalid arguments, Web startup, launch-token login, and HTML responses. It does not include a real model request. See the [CI results](https://github.com/0lidaxiang/dsh-plugin-greet/actions).
 
-The old Harness releases use broad upstream dependency ranges that can now resolve incompatible services. Their fresh-install failures do not prove the greeting implementation is incompatible with an already-installed old environment; those existing environments were not revalidated. For new installations, use one of the two supported releases above.
+The old Harness `0.1.2-rc.1` and `0.1.5-alpha.1` releases use broad upstream dependency ranges that can now resolve incompatible services. Their fresh-install failures do not prove the greeting implementation is incompatible with an already-installed old environment; those existing environments were not revalidated. For new installations, use one of the two supported releases above.
 
 The `@deepseek-ai/dsh-tools` peer declaration retains historical ranges for existing installations. A version satisfying that declaration is not by itself a tested dsh compatibility guarantee. New Harness releases need another compatibility check before being added to the supported list.
 
-To use the verified preview, replace `@deepseek-ai/dsh@0.2.0-rc.2` with `@deepseek-ai/dsh@0.2.1-alpha.1` consistently in the installation and launch commands below.
+To use the verified preview, replace `@deepseek-ai/dsh@0.2.1-rc.5` with `@deepseek-ai/dsh@0.2.2-alpha.2` consistently in the installation and launch commands below.
 
 ## Install from npm
 
-Use Node.js `^22.19.0` or `>=24.0.0` and install pnpm (`npm install -g pnpm@10.32.1`) for profile plugin management. Development dependencies target Harness `0.2.0-rc.2`; CI also verifies `0.2.1-alpha.1`. The commands below pin the default release tested by this repository.
+For dsh `0.2.1-rc.5`, use Node.js `^22.19.0` or `>=24.0.0`; the `0.2.2-alpha.2` preview requires `>=24.9.0`. Install pnpm (`npm install -g pnpm@10.32.1`) for profile plugin management. Development dependencies target Harness `0.2.1-rc.5`; CI also verifies `0.2.2-alpha.2`. The commands below pin the default release tested by this repository.
 
 Stop any running DeepSeek Harness instance, then install the package into the `web` profile:
 
 ```sh
-npx @deepseek-ai/dsh@0.2.0-rc.2 plugin --profile web add dsh-plugin-greet@0.3.2
+npx @deepseek-ai/dsh@0.2.1-rc.5 plugin --profile web add dsh-plugin-greet@0.3.3
 ```
 
-Version `0.3.2` refreshes development dependencies and compatibility checks for Harness 0.2. Its greeting behavior is unchanged from `0.3.0`.
+Version `0.3.3` updates the compatibility declarations required by newer Harness installers and adapts the test harness to the preview's separate tool executor and batch API. Its greeting behavior is unchanged from `0.3.0`.
 
 This command does more than a regular `npm install`: it installs the package into the selected Harness profile and adds its declared bundle to the profile composition.
 
 Before starting, confirm that the bundle is present in the final configuration:
 
 ```sh
-npx @deepseek-ai/dsh@0.2.0-rc.2 --profile web --dump-config
+npx @deepseek-ai/dsh@0.2.1-rc.5 --profile web --dump-config
 ```
 
 Then start the Web UI:
 
 ```sh
-npx @deepseek-ai/dsh@0.2.0-rc.2 web
+npx @deepseek-ai/dsh@0.2.1-rc.5 web
 ```
 
 ## Try the tool
@@ -197,7 +198,7 @@ Later patch layers replace the entire row configuration rather than deep-merging
 To install the current development branch:
 
 ```sh
-npx @deepseek-ai/dsh@0.2.0-rc.2 plugin --profile web add \
+npx @deepseek-ai/dsh@0.2.1-rc.5 plugin --profile web add \
   github:0lidaxiang/dsh-plugin-greet#master
 ```
 
@@ -208,7 +209,7 @@ For stable usage, prefer a published npm version, release tag, or specific commi
 Run this command from the parent directory of the repository:
 
 ```sh
-npx @deepseek-ai/dsh@0.2.0-rc.2 plugin --profile web add ./dsh-plugin-greet
+npx @deepseek-ai/dsh@0.2.1-rc.5 plugin --profile web add ./dsh-plugin-greet
 ```
 
 After changing the code, restart DeepSeek Harness and verify the tool through the chat interface.
@@ -233,13 +234,21 @@ The test suite imports the real Harness tool API and verifies configuration defa
 Run the same compatibility checks as CI (requires pnpm and registry access):
 
 ```sh
-npm run test:compat -- 0.2.0-rc.2
-npm run test:compat -- 0.2.1-alpha.1
+npm run test:compat -- 0.2.1-rc.5
+npm run test:compat -- 0.2.2-alpha.2 # Node.js >=24.9.0
 ```
 
-Each check installs the selected Harness into a temporary directory, runs the unit tests against it, packs this checkout, installs that tarball through the real profile CLI, and starts Web on an available loopback port. It verifies all four greetings, invalid arguments, the launch-token login flow, and the HTML response, then stops the server and removes the temporary profile. It does not call a model or use your existing profile. CI runs both Harness versions on both Node versions.
+Each check installs the selected Harness into a temporary directory, runs the unit tests against it, packs this checkout, installs that tarball through the real profile CLI, and starts Web on an available loopback port. It verifies all four greetings, invalid arguments, the launch-token login flow, and the HTML response, then stops the server and removes the temporary profile. It does not call a model or use your existing profile. CI uses the version combinations listed in the compatibility section. Installation enforces the host's Node engine requirement.
 
-Update Cordis alongside the Harness development packages: `0.2.0-rc.2` requires Cordis `~4.0.4`, while `0.2.1-alpha.1` requires `~4.0.5-alpha.1`. The compatibility script reads the selected release's Cordis peer requirement from the official npm registry instead of reusing the development version. Pin matching versions of `dsh-tools` and `dsh-system-prompt`; the `dsh-tools` npm `latest` tag does not track the CLI's `latest` tag.
+Update Cordis alongside the Harness development packages: `0.2.1-rc.5` requires Cordis `~4.0.5`, while `0.2.2-alpha.2` requires `~4.0.6-alpha.1`. The compatibility script reads the selected release's Cordis peer requirement from the official npm registry instead of reusing the development version. Pin matching versions of `dsh-tools` and `dsh-system-prompt`; the `dsh-tools` npm `latest` tag does not track the CLI's `latest` tag.
+
+Standalone tests for `0.2.2-alpha.2` mount `@deepseek-ai/dsh-tool-executor-native` and use the batch `tools.execute({ calls, signal })` API. The normal Web profile already supplies its executor; the plugin itself still only registers `greet`. The Web probe uses the host's executor without adding one.
+
+After publishing, verify installation from npm instead of the local tarball:
+
+```sh
+npm run test:compat -- 0.2.1-rc.5 --published
+```
 
 ## Troubleshooting
 
@@ -261,7 +270,11 @@ Open the complete launch URL printed by the current Harness process, including `
 
 ### Installation reports a missing Harness peer
 
-The official profile disables automatic peer installation and resolves Harness services from the host at startup, so pnpm can report a missing peer during installation. Check the supported version below, inspect `--dump-config`, and restart Harness. Avoid adding a separate copy of `dsh-tools` to the profile to silence this warning; the plugin should use the host's service.
+The official profile disables automatic peer installation and resolves Harness services from the host at startup, so pnpm can report a missing peer during installation. Check the supported versions above, inspect `--dump-config`, and restart Harness. Avoid adding a separate copy of `dsh-tools` to the profile to silence this warning; the plugin should use the host's service.
+
+### Installation is rejected as incompatible
+
+Newer Harness versions enforce the declared `dsh-tools` peer range. Upgrade to `dsh-plugin-greet@0.3.3` for the versions in the current compatibility table. A missing-peer warning during pnpm installation is different from Harness rejecting an unsupported version. For other dsh releases, verify compatibility before adding them to the declaration.
 
 ### My configuration did not take effect
 
@@ -272,7 +285,7 @@ Make sure your later patch restates the row with the same `id` (`greet-tool`), t
 Use a supported Node.js version, refresh dependencies, and remove stale generated output before rebuilding:
 
 ```sh
-nvm use 22.22.3
+nvm use 24.9.0
 pnpm install --frozen-lockfile
 pnpm run clean
 pnpm run build

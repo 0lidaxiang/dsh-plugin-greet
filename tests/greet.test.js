@@ -5,6 +5,7 @@ import ToolRuntime, { ToolArgsError } from '@deepseek-ai/dsh-tools'
 import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
 
 import * as GreetPlugin from '../index.js'
+import { executeTool, mountTestExecutor } from '../scripts/fixtures/tool-runtime.mjs'
 
 const { Config, DEFAULT_CONFIG, apply } = GreetPlugin
 
@@ -106,17 +107,19 @@ describe('greet plugin', () => {
     await assert.rejects(() => tool.execute({ name: 42 }), ToolArgsError)
   })
 
-  it('registers and executes through the real Harness tool runtime', async () => {
+  it('registers and executes through the real Harness tool runtime', async (t) => {
     const ctx = new Context()
+    t.after(() => ctx.fiber.dispose())
     await ctx.plugin(SystemPrompt)
     await ctx.plugin(ToolRuntime)
+    await mountTestExecutor(ctx)
     await ctx.plugin(GreetPlugin)
 
     const schema = ctx.tools.schemas().find(tool => tool.name === 'greet')
     assert.deepEqual(schema.parameters.required, ['name'])
 
     const signal = new AbortController().signal
-    const result = await ctx.tools.execute({
+    const result = await executeTool(ctx, {
       signal,
       callId: 'greet-test-1',
       name: 'greet',
@@ -133,7 +136,7 @@ describe('greet plugin', () => {
       },
     })
 
-    const invalid = await ctx.tools.execute({
+    const invalid = await executeTool(ctx, {
       signal,
       callId: 'greet-test-2',
       name: 'greet',

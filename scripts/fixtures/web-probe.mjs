@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
+import { executeTool } from './tool-runtime.mjs'
 
 export const inject = ['tools']
 
@@ -14,7 +15,7 @@ export function apply(ctx) {
       [{ name: '小明', language: 'zh' }, '你好，小明！'],
       [{ name: '小明', language: 'zh', style: 'formal' }, '您好，小明。'],
     ].entries()) {
-      const result = await ctx.tools.execute({
+      const result = await executeTool(ctx, {
         signal: new AbortController().signal,
         callId: `compat-${index}`,
         name: 'greet',
@@ -24,7 +25,7 @@ export function apply(ctx) {
       assert.equal(result.value.message, expected)
       assert.deepEqual(result.content, [{ type: 'text', text: expected }])
     }
-    const invalid = await ctx.tools.execute({
+    const invalid = await executeTool(ctx, {
       signal: new AbortController().signal,
       callId: 'compat-invalid',
       name: 'greet',

@@ -29,8 +29,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['22.19.0', '24']
-        harness-version: ['0.2.0-rc.2', '0.2.1-alpha.1']
+        include:
+          - node-version: '22.19.0'
+            harness-version: '0.2.1-rc.5'
+          - node-version: '24'
+            harness-version: '0.2.1-rc.5'
+          - node-version: '24.9.0'
+            harness-version: '0.2.2-alpha.2'
+          - node-version: '24'
+            harness-version: '0.2.2-alpha.2'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

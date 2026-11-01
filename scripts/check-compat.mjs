@@ -12,6 +12,8 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
 const version = process.argv[2] ?? manifest.devDependencies['@deepseek-ai/dsh-tools']
 assert.match(version, /^\d+\.\d+\.\d+(?:-[\w.-]+)?$/, 'Pass an explicit Harness version')
+assert.ok(process.argv[3] === undefined || process.argv[3] === '--published', 'Optional flag: --published')
+const published = process.argv[3] === '--published'
 const work = await mkdtemp(join(tmpdir(), 'greet-compat-'))
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 const env = {
@@ -106,29 +108,33 @@ try {
     },
   }, null, 2))
   console.log(`Installing Harness ${version} in a temporary directory`)
-  await run(npm, ['install', '--no-audit', '--no-fund', '--registry=https://registry.npmjs.org'])
+  await run(npm, ['install', '--engine-strict', '--no-audit', '--no-fund', '--registry=https://registry.npmjs.org'])
   await cp(join(root, 'index.js'), join(work, 'index.js'))
   await cp(join(root, 'tests'), join(work, 'tests'), { recursive: true })
+  await cp(join(root, 'scripts/fixtures'), join(work, 'scripts/fixtures'), { recursive: true })
   process.stdout.write(await run(process.execPath, ['--test']))
 
   const packed = JSON.parse(await run(npm, ['pack', '--json', '--pack-destination', work], root))
   const bin = join(work, 'node_modules/@deepseek-ai/dsh/lib/bin.js')
-  process.stdout.write(await run(process.execPath, [bin, 'plugin', '--profile', 'web', 'add', join(work, packed[0].filename)]))
+  const source = published ? `${manifest.name}@${manifest.version}` : join(work, packed[0].filename)
+  process.stdout.write(await run(process.execPath, [bin, 'plugin', '--profile', 'web', 'add', source]))
   const config = await run(process.execPath, [bin, '--profile', 'web', '--dump-config'])
   assert.match(config, /id: greet-tool/)
   const profile = join(work, 'home/profiles/web')
   const installed = JSON.parse(await readFile(join(profile, 'node_modules/dsh-plugin-greet/package.json'), 'utf8'))
+  assert.equal(installed.version, manifest.version)
   assert.equal(installed.peerDependencies['@deepseek-ai/dsh-tools'], manifest.peerDependencies['@deepseek-ai/dsh-tools'])
   assert.equal(await readFile(join(profile, 'node_modules/dsh-plugin-greet/index.js'), 'utf8'), await readFile(join(root, 'index.js'), 'utf8'))
   const probe = join(profile, 'compat-probe.mjs')
   await cp(join(root, 'scripts/fixtures/web-probe.mjs'), probe)
+  await cp(join(root, 'scripts/fixtures/tool-runtime.mjs'), join(profile, 'tool-runtime.mjs'))
   const patch = join(profile, 'compat.patch.json')
   await writeFile(patch, JSON.stringify([
     { id: 'webserver', config: { host: '127.0.0.1', port: 0 } },
     { insert: [{ id: 'greet-compat-probe', name: probe }] },
   ]))
   await checkWeb(bin, patch)
-  console.log(`PASS Harness ${version}: unit tests, packed profile installation, four greetings, invalid arguments, Web login and HTML`)
+  console.log(`PASS Harness ${version}: unit tests, ${published ? 'published' : 'packed'} profile installation, four greetings, invalid arguments, Web login and HTML`)
 } finally {
   await rm(work, { recursive: true, force: true })
 }

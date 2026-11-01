@@ -84,52 +84,53 @@ Hello, Ada!
 
 ## 支持的 dsh 版本
 
-`dsh-plugin-greet@0.3.2` 推荐搭配 **`@deepseek-ai/dsh@0.2.0-rc.2`**。预览版 **`0.2.1-alpha.1`** 也已验证通过。兼容结论针对这两个精确版本，不代表所有 `0.2.x` 都已验证。
+`dsh-plugin-greet@0.3.3` 推荐搭配 **`@deepseek-ai/dsh@0.2.1-rc.5`**。预览版 **`0.2.2-alpha.2`** 也已验证通过。兼容结论针对这两个精确版本，不代表所有 `0.2.x` 都已验证。
 
-最近验证日期：**2026 年 10 月 7 日**。
+最近验证日期：**2026 年 11 月 1 日**。
 
 | 已验证的插件版本 | dsh 版本 | 状态 |
 | --- | --- | --- |
-| `0.3.2` | `0.2.0-rc.2` | 支持；推荐安装版本；当前 CI 覆盖 |
-| `0.3.2` | `0.2.1-alpha.1` | 支持的预览版；当前 CI 覆盖 |
-| `0.3.0` / `0.3.1` | `0.1.2-rc.1` | 仅有历史验证；本次全新安装复查在 Web 启动时缺少 HMR 服务 |
-| `0.3.0` / `0.3.1` | `0.1.5-alpha.1` | 仅有历史验证；本次全新安装复查出现上游 peer 依赖冲突 |
-| `0.3.0` | `0.1.1-rc.1` | 仅有历史验证；未用插件 `0.3.2` 重新验证 |
-| `0.1.x` | `0.1.0-rc.6` | 最初插件的目标版本；未用插件 `0.3.2` 重新验证 |
+| `0.3.3` | `0.2.1-rc.5` | 支持；推荐安装版本；当前 CI 覆盖 |
+| `0.3.3` | `0.2.2-alpha.2` | 支持的预览版；要求 Node.js `>=24.9.0`；当前 CI 覆盖 |
+| `0.3.2` | `0.2.0-rc.2` / `0.2.1-alpha.1` | 10 月 7 日验证通过；未用插件 `0.3.3` 重新验证 |
+| `0.3.0` / `0.3.1` | `0.1.2-rc.1` | 仅有历史验证；10 月 7 日全新安装复查在 Web 启动时缺少 HMR 服务 |
+| `0.3.0` / `0.3.1` | `0.1.5-alpha.1` | 仅有历史验证；10 月 7 日全新安装复查出现上游 peer 依赖冲突 |
+| `0.3.0` | `0.1.1-rc.1` | 仅有历史验证；未用插件 `0.3.3` 重新验证 |
+| `0.1.x` | `0.1.0-rc.6` | 最初插件的目标版本；未用插件 `0.3.3` 重新验证 |
 | 任意 | 其他 dsh 版本 | 未验证；使用前应运行兼容性检查 |
 
-当前 CI 覆盖 Node.js 22.19 和 24，检查单元测试、通过 Profile CLI 安装插件打包产物、四种问候、非法参数、Web 启动、启动令牌登录和 HTML 响应，不包含真实模型请求。可查看 [0.3.2 的通过记录](https://github.com/0lidaxiang/dsh-plugin-greet/actions/runs/37595351660)。
+当前 CI 覆盖 dsh `0.2.1-rc.5` 搭配 Node.js 22.19／24，以及 dsh `0.2.2-alpha.2` 搭配 Node.js 24.9／24，检查单元测试、通过 Profile CLI 安装插件打包产物、四种问候、非法参数、Web 启动、启动令牌登录和 HTML 响应，不包含真实模型请求。可查看 [CI 结果](https://github.com/0lidaxiang/dsh-plugin-greet/actions)。
 
-旧 Harness 的宽松上游依赖范围如今可能解析出不兼容的服务。全新安装失败，不等于问候实现在已有旧环境中必然不兼容；本次未重新验证这些已有环境。新安装请使用上方两个明确支持的版本之一。
+旧 Harness `0.1.2-rc.1` 和 `0.1.5-alpha.1` 的宽松上游依赖范围如今可能解析出不兼容的服务。全新安装失败，不等于问候实现在已有旧环境中必然不兼容；本次未重新验证这些已有环境。新安装请使用上方两个明确支持的版本之一。
 
 `@deepseek-ai/dsh-tools` 的 peer 声明保留了历史范围，供已有安装使用。满足该声明，不等于对应 dsh 已经过兼容验证。新的 Harness 版本需要重新运行兼容性检查，通过后再加入支持列表。
 
-如需使用已验证的预览版，请把下方安装和启动命令中的 `@deepseek-ai/dsh@0.2.0-rc.2` 统一替换为 `@deepseek-ai/dsh@0.2.1-alpha.1`。
+如需使用已验证的预览版，请把下方安装和启动命令中的 `@deepseek-ai/dsh@0.2.1-rc.5` 统一替换为 `@deepseek-ai/dsh@0.2.2-alpha.2`。
 
 ## 从 npm 安装
 
-使用 Node.js `^22.19.0` 或 `>=24.0.0`，并安装 pnpm（`npm install -g pnpm@10.32.1`）以管理 Profile 插件。开发依赖以 Harness `0.2.0-rc.2` 为基准，CI 同时验证 `0.2.1-alpha.1`。以下命令固定使用本仓库已验证的默认发布版。
+dsh `0.2.1-rc.5` 使用 Node.js `^22.19.0` 或 `>=24.0.0`；预览版 `0.2.2-alpha.2` 要求 `>=24.9.0`。安装 pnpm（`npm install -g pnpm@10.32.1`）以管理 Profile 插件。开发依赖以 Harness `0.2.1-rc.5` 为基准，CI 同时验证 `0.2.2-alpha.2`。以下命令固定使用本仓库已验证的默认发布版。
 
 先停止正在运行的 DeepSeek Harness，然后把包装进 `web` Profile：
 
 ```sh
-npx @deepseek-ai/dsh@0.2.0-rc.2 plugin --profile web add dsh-plugin-greet@0.3.2
+npx @deepseek-ai/dsh@0.2.1-rc.5 plugin --profile web add dsh-plugin-greet@0.3.3
 ```
 
-`0.3.2` 针对 Harness 0.2 更新了开发依赖和兼容性检查，问候行为与 `0.3.0` 相同。
+`0.3.3` 更新了新版安装器要求的兼容声明，并适配预览版拆分后的工具执行器和批量调用测试，问候行为与 `0.3.0` 相同。
 
 这条命令不只是普通的 `npm install`：它会把包装进指定的 Harness Profile，并把包声明的 Bundle 加入 Profile 组合配置。
 
 启动前确认 Bundle 已进入最终配置：
 
 ```sh
-npx @deepseek-ai/dsh@0.2.0-rc.2 --profile web --dump-config
+npx @deepseek-ai/dsh@0.2.1-rc.5 --profile web --dump-config
 ```
 
 然后启动 Web UI：
 
 ```sh
-npx @deepseek-ai/dsh@0.2.0-rc.2 web
+npx @deepseek-ai/dsh@0.2.1-rc.5 web
 ```
 
 ## 调用工具
@@ -197,7 +198,7 @@ defaultStyle: friendly
 安装当前开发分支：
 
 ```sh
-npx @deepseek-ai/dsh@0.2.0-rc.2 plugin --profile web add \
+npx @deepseek-ai/dsh@0.2.1-rc.5 plugin --profile web add \
   github:0lidaxiang/dsh-plugin-greet#master
 ```
 
@@ -208,7 +209,7 @@ npx @deepseek-ai/dsh@0.2.0-rc.2 plugin --profile web add \
 在仓库上一级目录执行：
 
 ```sh
-npx @deepseek-ai/dsh@0.2.0-rc.2 plugin --profile web add ./dsh-plugin-greet
+npx @deepseek-ai/dsh@0.2.1-rc.5 plugin --profile web add ./dsh-plugin-greet
 ```
 
 修改代码后重启 DeepSeek Harness，再通过聊天窗口验证工具调用。
@@ -233,13 +234,21 @@ npm run check
 运行与 CI 相同的兼容性检查（需要 pnpm 和 npm registry 网络访问）：
 
 ```sh
-npm run test:compat -- 0.2.0-rc.2
-npm run test:compat -- 0.2.1-alpha.1
+npm run test:compat -- 0.2.1-rc.5
+npm run test:compat -- 0.2.2-alpha.2 # Node.js >=24.9.0
 ```
 
-每次检查会在临时目录安装指定 Harness，使用该版本运行单元测试，再把当前代码打包，通过真实 Profile CLI 安装 tarball，并在本机回环地址的空闲端口启动 Web。检查覆盖四种问候、非法参数、启动令牌登录流程和 HTML 响应，结束后停止服务并删除临时 Profile。检查不会调用模型或使用你现有的 Profile。CI 会覆盖两个 Harness 版本与两个 Node 版本的全部组合。
+每次检查会在临时目录安装指定 Harness，使用该版本运行单元测试，再把当前代码打包，通过真实 Profile CLI 安装 tarball，并在本机回环地址的空闲端口启动 Web。检查覆盖四种问候、非法参数、启动令牌登录流程和 HTML 响应，结束后停止服务并删除临时 Profile。检查不会调用模型或使用你现有的 Profile。CI 使用兼容性表中列出的 Node／Harness 组合；安装时会强制检查宿主的 Node 版本要求。
 
-升级 Harness 开发包时要同步更新 Cordis：`0.2.0-rc.2` 要求 `~4.0.4`，`0.2.1-alpha.1` 要求 `~4.0.5-alpha.1`。兼容性脚本会从官方 npm registry 读取所选版本的 Cordis peer 要求，不再复用开发环境中的固定版本。`dsh-tools` 和 `dsh-system-prompt` 应固定为匹配版本；`dsh-tools` 的 npm `latest` 标签并不跟随 CLI 的 `latest` 标签。
+升级 Harness 开发包时要同步更新 Cordis：`0.2.1-rc.5` 要求 `~4.0.5`，`0.2.2-alpha.2` 要求 `~4.0.6-alpha.1`。兼容性脚本会从官方 npm registry 读取所选版本的 Cordis peer 要求，不再复用开发环境中的固定版本。`dsh-tools` 和 `dsh-system-prompt` 应固定为匹配版本；`dsh-tools` 的 npm `latest` 标签并不跟随 CLI 的 `latest` 标签。
+
+`0.2.2-alpha.2` 的独立测试会加载 `@deepseek-ai/dsh-tool-executor-native`，并使用 `tools.execute({ calls, signal })` 批量调用接口。正常 Web Profile 已提供执行器，插件本身仍只注册 `greet`；Web 探针直接使用宿主执行器，不额外加载一个。
+
+发布后，可以验证从 npm 安装的版本，而非本地打包产物：
+
+```sh
+npm run test:compat -- 0.2.1-rc.5 --published
+```
 
 ## 常见问题
 
@@ -261,7 +270,11 @@ npm run test:compat -- 0.2.1-alpha.1
 
 ### 安装时提示缺少 Harness peer 依赖
 
-官方 Profile 关闭了自动安装 peer 依赖，在启动时从宿主解析 Harness 服务，因此 pnpm 在安装阶段可能提示缺少 peer。确认使用下方列出的兼容版本，检查 `--dump-config`，再重启 Harness。不要为了消除警告而给 Profile 单独安装一份 `dsh-tools`，插件应使用宿主的服务。
+官方 Profile 关闭了自动安装 peer 依赖，在启动时从宿主解析 Harness 服务，因此 pnpm 在安装阶段可能提示缺少 peer。确认使用上方列出的兼容版本，检查 `--dump-config`，再重启 Harness。不要为了消除警告而给 Profile 单独安装一份 `dsh-tools`，插件应使用宿主的服务。
+
+### 安装被拒绝，提示版本不兼容
+
+新版 Harness 会强制检查声明的 `dsh-tools` peer 范围。使用当前兼容性表中的 dsh 版本时，请升级到 `dsh-plugin-greet@0.3.3`。pnpm 安装时的缺少 peer 警告，与 Harness 拒绝不支持的版本是两种情况。其他 dsh 版本应先完成兼容性验证，再加入声明。
 
 ### 修改配置后没有生效
 
@@ -272,7 +285,7 @@ npm run test:compat -- 0.2.1-alpha.1
 切换到支持的 Node.js 版本，刷新依赖，清理旧生成产物后再构建：
 
 ```sh
-nvm use 22.22.3
+nvm use 24.9.0
 pnpm install --frozen-lockfile
 pnpm run clean
 pnpm run build
