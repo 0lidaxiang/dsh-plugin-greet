@@ -49,3 +49,19 @@ jobs:
           run_install: false
       - name: Test packed plugin against Harness
         run: npm run test:compat -- ${{ matrix.harness-version }}
+
+  npm12:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --global npm@12.2.1 --ignore-scripts --no-audit --no-fund
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+          run_install: false
+      - run: npm ci --registry=https://registry.npmjs.org --no-audit --no-fund
+      - run: npm run check
+      - run: npm run test:compat -- 0.2.1-rc.5

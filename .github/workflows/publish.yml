@@ -1,0 +1,70 @@
+name: Publish npm package
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the verified package. Select its matching vX.Y.Z tag.
+        type: boolean
+        default: false
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --global npm@12.2.1 --ignore-scripts --no-audit --no-fund
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+          run_install: false
+      - run: npm ci --registry=https://registry.npmjs.org --no-audit --no-fund
+      - run: npm run check
+      - run: npm run test:compat -- 0.2.1-rc.5
+      - name: Check release tag
+        if: inputs.publish
+        run: node --input-type=module -e "import assert from 'node:assert/strict'; import fs from 'node:fs'; const p = JSON.parse(fs.readFileSync('package.json')); assert.equal(process.env.GITHUB_REF, 'refs/tags/v' + p.version)"
+      - name: Pack verified package
+        run: npm pack --pack-destination "$RUNNER_TEMP"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: ${{ runner.temp }}/dsh-plugin-greet-*.tgz
+          if-no-files-found: error
+
+  publish:
+    if: inputs.publish
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --global npm@12.2.1 --ignore-scripts --no-audit --no-fund
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+          path: package
+      - name: Publish verified tarball through OIDC
+        run: |
+          shopt -s nullglob
+          tarballs=(package/*.tgz)
+          test "${#tarballs[@]}" -eq 1
+          npm publish "${tarballs[0]}" --access public --registry=https://registry.npmjs.org

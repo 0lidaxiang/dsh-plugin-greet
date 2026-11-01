@@ -91,9 +91,12 @@ async function checkWeb(bin, patch) {
 
 try {
   // Each release line may require a different (including prerelease) Cordis.
-  const peers = JSON.parse(await run(npm, [
+  const peerMetadata = JSON.parse(await run(npm, [
     'view', `@deepseek-ai/dsh-tools@${version}`, 'peerDependencies', '--json',
   ]))
+  // npm 12 may wrap a single version's selected field in an array.
+  if (Array.isArray(peerMetadata)) assert.equal(peerMetadata.length, 1)
+  const peers = Array.isArray(peerMetadata) ? peerMetadata[0] : peerMetadata
   assert.equal(typeof peers['@deepseek-ai/cordis'], 'string')
   // The local lockfile stays untouched; each matrix cell owns its host installation.
   await writeFile(join(work, 'package.json'), JSON.stringify({
@@ -113,10 +116,13 @@ try {
   await cp(join(root, 'tests'), join(work, 'tests'), { recursive: true })
   await cp(join(root, 'scripts/fixtures'), join(work, 'scripts/fixtures'), { recursive: true })
   process.stdout.write(await run(process.execPath, ['--test']))
+  process.stdout.write(await run(process.execPath, [join(work, 'scripts/fixtures/terminal-probe.mjs')]))
 
-  const packed = JSON.parse(await run(npm, ['pack', '--json', '--pack-destination', work], root))
+  const packMetadata = JSON.parse(await run(npm, ['pack', '--json', '--pack-destination', work], root))
+  const packed = Array.isArray(packMetadata) ? packMetadata[0] : packMetadata[manifest.name]
+  assert.equal(typeof packed?.filename, 'string')
   const bin = join(work, 'node_modules/@deepseek-ai/dsh/lib/bin.js')
-  const source = published ? `${manifest.name}@${manifest.version}` : join(work, packed[0].filename)
+  const source = published ? `${manifest.name}@${manifest.version}` : join(work, packed.filename)
   process.stdout.write(await run(process.execPath, [bin, 'plugin', '--profile', 'web', 'add', source]))
   const config = await run(process.execPath, [bin, '--profile', 'web', '--dump-config'])
   assert.match(config, /id: greet-tool/)

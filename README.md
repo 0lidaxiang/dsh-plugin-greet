@@ -84,7 +84,7 @@ This separation lets other plugins or policies use the structured fields without
 
 ## Supported dsh versions
 
-For `dsh-plugin-greet@0.3.3`, use **`@deepseek-ai/dsh@0.2.1-rc.5`**. The preview **`0.2.2-alpha.2`** is also verified. Compatibility is stated for these exact releases, not all `0.2.x` versions.
+For `dsh-plugin-greet@0.3.4`, use **`@deepseek-ai/dsh@0.2.1-rc.5`**. The preview **`0.2.2-alpha.2`** is also verified. Compatibility is stated for these exact releases, not all `0.2.x` versions.
 
 Last checked: **November 1, 2026**.
 
@@ -114,7 +114,7 @@ For dsh `0.2.1-rc.5`, use Node.js `^22.19.0` or `>=24.0.0`; the `0.2.2-alpha.2` 
 Stop any running DeepSeek Harness instance, then install the package into the `web` profile:
 
 ```sh
-npx @deepseek-ai/dsh@0.2.1-rc.5 plugin --profile web add dsh-plugin-greet@0.3.3
+npx @deepseek-ai/dsh@0.2.1-rc.5 plugin --profile web add dsh-plugin-greet@0.3.4
 ```
 
 Version `0.3.3` updates the compatibility declarations required by newer Harness installers and adapts the test harness to the preview's separate tool executor and batch API. Its greeting behavior is unchanged from `0.3.0`.
@@ -250,6 +250,12 @@ After publishing, verify installation from npm instead of the local tarball:
 npm run test:compat -- 0.2.1-rc.5 --published
 ```
 
+## Publish with OIDC
+
+The `Publish npm package` GitHub Actions workflow first checks npm 12 default-policy installation, plugin compatibility, and real terminal input/output. Run it with `publish=false` to rehearse without publishing. To release, bump the package and lockfile version, push the matching `vX.Y.Z` tag, then dispatch from that tag with `publish=true`. The protected `npm-publish` job publishes the verified tarball using OIDC, without a stored npm write token.
+
+The npm trusted publisher for `dsh-plugin-greet` must authorize GitHub repository `0lidaxiang/dsh-plugin-greet`, workflow `publish.yml`, environment `npm-publish`, and direct `npm publish`. Existing users do not need to reinstall or change their configuration for this publishing setup.
+
 ## Troubleshooting
 
 ### The model replies but does not call `greet`
@@ -274,7 +280,7 @@ The official profile disables automatic peer installation and resolves Harness s
 
 ### Installation is rejected as incompatible
 
-Newer Harness versions enforce the declared `dsh-tools` peer range. Upgrade to `dsh-plugin-greet@0.3.3` for the versions in the current compatibility table. A missing-peer warning during pnpm installation is different from Harness rejecting an unsupported version. For other dsh releases, verify compatibility before adding them to the declaration.
+Newer Harness versions enforce the declared `dsh-tools` peer range. Upgrade to `dsh-plugin-greet@0.3.4` for the versions in the current compatibility table. A missing-peer warning during pnpm installation is different from Harness rejecting an unsupported version. For other dsh releases, verify compatibility before adding them to the declaration.
 
 ### My configuration did not take effect
 
