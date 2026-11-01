@@ -252,6 +252,8 @@ npm run test:compat -- 0.2.1-rc.5 --published
 
 ## Publish with OIDC
 
+For the maintainer release procedure, see [Releasing dsh-plugin-greet](docs/releasing.md).
+
 The `Publish npm package` GitHub Actions workflow first checks npm 12 default-policy installation, plugin compatibility, and real terminal input/output. Run it with `publish=false` to rehearse without publishing. To release, bump the package and lockfile version, push the matching `vX.Y.Z` tag, then dispatch from that tag with `publish=true`. The protected `npm-publish` job publishes the verified tarball using OIDC, without a stored npm write token.
 
 The npm trusted publisher for `dsh-plugin-greet` must authorize GitHub repository `0lidaxiang/dsh-plugin-greet`, workflow `publish.yml`, environment `npm-publish`, and direct `npm publish`. Existing users do not need to reinstall or change their configuration for this publishing setup.

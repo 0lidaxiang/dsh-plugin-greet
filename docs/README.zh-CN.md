@@ -252,6 +252,8 @@ npm run test:compat -- 0.2.1-rc.5 --published
 
 ## 使用 OIDC 发布
 
+维护者的完整发布步骤见 [Releasing dsh-plugin-greet](releasing.md)。
+
 GitHub Actions 的 `Publish npm package` 工作流首先验证 npm 12 默认策略安装、插件兼容性以及真实终端输入输出。使用 `publish=false` 可以排练而不发布。正式发布时，更新包及锁文件版本，推送匹配的 `vX.Y.Z` 标签，再从该标签以 `publish=true` 手动执行工作流。受保护的 `npm-publish` 作业通过 OIDC 发布已经验证的 tarball，不保存 npm 写入令牌。
 
 `dsh-plugin-greet` 的 npm 可信发布者需要授权 GitHub 仓库 `0lidaxiang/dsh-plugin-greet`、工作流 `publish.yml`、环境 `npm-publish`，并允许直接 `npm publish`。现有用户无需因为发布流程配置而重新安装或修改配置。
