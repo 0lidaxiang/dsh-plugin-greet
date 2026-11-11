@@ -6,7 +6,7 @@ This procedure releases only `dsh-plugin-greet` from `0lidaxiang/dsh-plugin-gree
 
 1. Inspect the working tree and remote, fetch the current branch, and preserve unrelated changes.
 2. Update the package and lockfile version together, for example with `npm version patch --no-git-tag-version --ignore-scripts`. Use a fresh version and keep existing release tags intact.
-3. Run `npm run check` and the relevant compatibility checks using the npm version pinned in the publish workflow and a supported Node runtime. `npm run test:compat -- 0.2.1-rc.5` exercises the default supported Harness; the CI matrix also covers the documented preview version. Review the staged diff and run `git diff --check`.
+3. Run `npm run check` and the relevant compatibility checks using the npm version pinned in the publish workflow and a supported Node runtime. `npm run test:compat -- 0.2.2-rc.1` exercises the default supported Harness; the publish workflow also verifies `0.2.1-rc.5`, and the CI matrix covers the documented preview version. Review the staged diff and run `git diff --check`.
 4. Commit and push the intended changes. Wait for the commit's CI checks to pass, then create and push the matching `vX.Y.Z` tag.
 
 ## Publish through OIDC
@@ -42,7 +42,7 @@ Wait for the workflow to finish successfully. Query the official registry for th
 ```sh
 npm view dsh-plugin-greet@X.Y.Z version _npmUser dist.attestations --json --registry=https://registry.npmjs.org
 npm view dsh-plugin-greet dist-tags.latest --json --registry=https://registry.npmjs.org
-npm run test:compat -- 0.2.1-rc.5 --published
+npm run test:compat -- 0.2.2-rc.1 --published
 ```
 
 Run the published check from the release checkout so its package version matches the target. Report the released version, workflow URL, checks actually run, and any remaining blocker. Existing users do not need to reinstall because the publishing mechanism changed.

@@ -34,6 +34,7 @@ jobs:
       - run: npm ci --registry=https://registry.npmjs.org --no-audit --no-fund
       - run: npm run check
       - run: npm run test:compat -- 0.2.1-rc.5
+      - run: npm run test:compat -- 0.2.2-rc.1
       - name: Check release tag
         if: inputs.publish
         run: node --input-type=module -e "import assert from 'node:assert/strict'; import fs from 'node:fs'; const p = JSON.parse(fs.readFileSync('package.json')); assert.equal(process.env.GITHUB_REF, 'refs/tags/v' + p.version)"
